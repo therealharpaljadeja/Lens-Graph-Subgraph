@@ -1,51 +1,72 @@
 import {
-  Approval as ApprovalEvent,
-  ApprovalForAll as ApprovalForAllEvent,
-  ProfileCreated,
-  Transfer as TransferEvent
-} from "../generated/LensHub/LensHub"
-import { Approval, ApprovalForAll, Profile, Transfer } from "../generated/schema"
+    Approval as ApprovalEvent,
+    ApprovalForAll as ApprovalForAllEvent,
+    CommentCreated,
+    ProfileCreated,
+    Transfer as TransferEvent,
+} from "../generated/LensHub/LensHub";
+import {
+    Approval,
+    ApprovalForAll,
+    Profile,
+    Transfer,
+} from "../generated/schema";
 
 export function handleApproval(event: ApprovalEvent): void {
-  let entity = new Approval(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
-  )
-  entity.owner = event.params.owner
-  entity.approved = event.params.approved
-  entity.tokenId = event.params.tokenId
-  entity.save()
+    let entity = new Approval(
+        event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+    );
+    entity.owner = event.params.owner;
+    entity.approved = event.params.approved;
+    entity.tokenId = event.params.tokenId;
+    entity.save();
 }
 
 export function handleApprovalForAll(event: ApprovalForAllEvent): void {
-  let entity = new ApprovalForAll(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
-  )
-  entity.owner = event.params.owner
-  entity.operator = event.params.operator
-  entity.approved = event.params.approved
-  entity.save()
+    let entity = new ApprovalForAll(
+        event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+    );
+    entity.owner = event.params.owner;
+    entity.operator = event.params.operator;
+    entity.approved = event.params.approved;
+    entity.save();
 }
 
 export function handleTransfer(event: TransferEvent): void {
-  let entity = new Transfer(
-    event.transaction.hash.toHex() + "-" + event.logIndex.toString()
-  )
-  entity.from = event.params.from
-  entity.to = event.params.to
-  entity.tokenId = event.params.tokenId
-  entity.save()
+    let entity = new Transfer(
+        event.transaction.hash.toHex() + "-" + event.logIndex.toString()
+    );
+    entity.from = event.params.from;
+    entity.to = event.params.to;
+    entity.tokenId = event.params.tokenId;
+    entity.save();
 }
 
 export function handleProfileCreated(event: ProfileCreated): void {
-  let profile = Profile.load(event.params.profileId.toString())
+    let profile = Profile.load(event.params.profileId.toString());
 
-  if(!profile) {
-    profile = new Profile(event.params.profileId.toString())
-    profile.metadata = event.params.followNFTURI
-    profile.handle = event.params.handle
-    profile.onwnedBy = event.params.creator.toHexString()
-    profile.isDefault = true
-    profile.isFollowedByMe = false
-    profile.save()
-  }
+    if (!profile) {
+        profile = new Profile(event.params.profileId.toString());
+        profile.metadata = event.params.followNFTURI;
+        profile.handle = event.params.handle;
+        profile.onwnedBy = event.params.creator.toHexString();
+        profile.isDefault = true;
+        profile.isFollowedByMe = false;
+        profile.save();
+    }
+}
+
+async function handleCommentCreated(event: CommentCreated): void {
+    let comment = Comment.load(events.params.pubId.toString());
+
+    if (!comment) {
+        comment = new Comment(event.params.pubId.toString());
+        comment.id = event.params.pubId.toString();
+        comment.commentBy = event.params.profileIdPointed.toString();
+        comment.contentURI = event.params.contentURI;
+        comment.commentedAt = event.params.timestamp;
+        comment.commentedOn = event.params.pubIdPointed.toString();
+        comment.commentedOnPubBy = event.params.profileIdPointed.toString();
+        comment.save();
+    }
 }
